@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerCycler", "PowerCycler\PowerCycler.csproj", "{70AEDD87-1BB1-4B42-A6C2-5125CE1BFC22}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70AEDD87-1BB1-4B42-A6C2-5125CE1BFC22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70AEDD87-1BB1-4B42-A6C2-5125CE1BFC22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70AEDD87-1BB1-4B42-A6C2-5125CE1BFC22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70AEDD87-1BB1-4B42-A6C2-5125CE1BFC22}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {47FDF573-88B9-48D5-A8AA-E939DB0FF019}
+	EndGlobalSection
+EndGlobal
