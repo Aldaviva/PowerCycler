@@ -43,7 +43,7 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.ProjectName }}-${{ env.TargetPlatform }}
+        name: ${{ env.ProjectName }}-${{ matrix.targetPlatform }}
         path: |
           ${{ env.ProjectName }}/bin/Release/net7.0/${{ matrix.targetPlatform }}/publish/${{ env.ProjectName }}
           ${{ env.ProjectName }}/bin/Release/net7.0/${{ matrix.targetPlatform }}/publish/${{ env.ProjectName }}.exe
