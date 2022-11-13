@@ -1,0 +1,36 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    env:
+      ProjectName: PowerCycler
+      TargetPlatform: linux-arm
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clone
+      uses: actions/checkout@v3
+    
+    - name: Restore
+      run: dotnet restore --runtime ${{ env.TargetPlatform }} --locked-mode --verbosity normal
+
+    - name: Build
+      run: dotnet build ${{ env.ProjectName }} --no-restore --runtime ${{ env.TargetPlatform }} --configuration Release --no-self-contained --verbosity normal
+
+    - name: Publish
+      run: dotnet publish --no-build --configuration Release -p:PublishSingleFile=true --runtime ${{ env.TargetPlatform }} --no-self-contained
+      
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.ProjectName }}
+        path: |
+          ${{ env.ProjectName }}\bin\Release\net7.0\${{ env.TargetPlatform }}\publish\${{ env.ProjectName }}
+          ${{ env.ProjectName }}\bin\Release\net7.0\${{ env.TargetPlatform }}\publish\appsettings.json
+        if-no-files-found: error
