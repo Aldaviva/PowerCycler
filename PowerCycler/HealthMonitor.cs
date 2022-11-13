@@ -26,7 +26,7 @@ public class HealthMonitor: BackgroundService {
             AutoReset = false,
             Enabled   = false
         };
-        restartTrigger.Elapsed += triggerRestart;
+        restartTrigger.Elapsed += restart;
 
         httpClient = new HttpClient(new SocketsHttpHandler {
             AllowAutoRedirect        = false,
@@ -101,7 +101,7 @@ public class HealthMonitor: BackgroundService {
         restartTrigger.Start();
     }
 
-    private async void triggerRestart(object? sender, ElapsedEventArgs e) {
+    private async void restart(object? sender, ElapsedEventArgs e) {
         restartTrigger.Stop();
         if (!cancellationToken.IsCancellationRequested) {
             try {
@@ -121,7 +121,7 @@ public class HealthMonitor: BackgroundService {
     protected virtual void Dispose(bool disposing) {
         if (disposing) {
             httpClient.Dispose();
-            restartTrigger.Elapsed -= triggerRestart;
+            restartTrigger.Elapsed -= restart;
             restartTrigger.Dispose();
         }
     }
