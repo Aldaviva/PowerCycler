@@ -5,13 +5,22 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
+env:
+  ProjectName: PowerCycler
+
 jobs:
   build:
-    env:
-      ProjectName: PowerCycler
-      TargetPlatform: linux-arm
-
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+        - os: ubuntu-latest
+          targetPlatform: linux-arm
+        - os: ubuntu-latest
+          targetPlatform: linux-x64
+        - os: windows-latest
+          targetPlatform: win-x64
+    
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Install .NET SDK
@@ -23,19 +32,20 @@ jobs:
       uses: actions/checkout@v3
     
     - name: Restore
-      run: dotnet restore --runtime ${{ env.TargetPlatform }} --locked-mode --verbosity normal
+      run: dotnet restore --runtime ${{ matrix.targetPlatform }} --locked-mode --verbosity normal
 
     - name: Build
-      run: dotnet build ${{ env.ProjectName }} --no-restore --runtime ${{ env.TargetPlatform }} --configuration Release --no-self-contained --verbosity normal
+      run: dotnet build ${{ env.ProjectName }} --no-restore --runtime ${{ matrix.targetPlatform }} --configuration Release --no-self-contained --verbosity normal
 
     - name: Publish
-      run: dotnet publish --no-build --configuration Release -p:PublishSingleFile=true --runtime ${{ env.TargetPlatform }} --no-self-contained
+      run: dotnet publish --no-build --configuration Release -p:PublishSingleFile=true --runtime ${{ matrix.targetPlatform }} --no-self-contained
       
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.ProjectName }}
+        name: ${{ env.ProjectName }}-${{ env.TargetPlatform }}
         path: |
-          ${{ env.ProjectName }}/bin/Release/net7.0/${{ env.TargetPlatform }}/publish/${{ env.ProjectName }}
-          ${{ env.ProjectName }}/bin/Release/net7.0/${{ env.TargetPlatform }}/publish/appsettings.json
+          ${{ env.ProjectName }}/bin/Release/net7.0/${{ matrix.targetPlatform }}/publish/${{ env.ProjectName }}
+          ${{ env.ProjectName }}/bin/Release/net7.0/${{ matrix.targetPlatform }}/publish/${{ env.ProjectName }}.exe
+          ${{ env.ProjectName }}/bin/Release/net7.0/${{ matrix.targetPlatform }}/publish/appsettings.json
         if-no-files-found: error
