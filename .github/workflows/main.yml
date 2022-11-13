@@ -36,6 +36,6 @@ jobs:
       with:
         name: ${{ env.ProjectName }}
         path: |
-          ${{ env.ProjectName }}\bin\Release\net7.0\${{ env.TargetPlatform }}\publish\${{ env.ProjectName }}
-          ${{ env.ProjectName }}\bin\Release\net7.0\${{ env.TargetPlatform }}\publish\appsettings.json
+          ${{ env.ProjectName }}/bin/Release/net7.0/${{ env.TargetPlatform }}/publish/${{ env.ProjectName }}
+          ${{ env.ProjectName }}/bin/Release/net7.0/${{ env.TargetPlatform }}/publish/appsettings.json
         if-no-files-found: error
