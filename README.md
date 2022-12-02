@@ -58,6 +58,7 @@ All fields are required.
 |`outletHostname`|`bragi.outlets.aldaviva.com`<br>or<br>`192.168.1.100`|The FQDN or IP address of a Kasa smart outlet to turn off and on when the process is deemed to be offline and must be restarted.|
 |`minOfflineDurationBeforeRestartSec`|`600`|How long, in seconds, to go without any successful health check responses before the outlet is power cycled. Should be longer than `healthCheckFrequencySec`.|
 |`resumeHealthCheckAfterRestartSec`|`300`|How long, in seconds, to wait after power cycling before checking health again. Should be longer than it takes your process to become healthy after a reboot.|
+|`Logging.LogLevel.Default`|`Information`|Minimum severity of log events to emit. Values are `Trace`, `Debug`, `Information`, `Warning`, `Error`, `Critical`, and `None`.<br>View logs using `sudo journalctl -u powercycler` on Linux or Event Viewer on Windows.|
 
 With the above example values, this service will send an HTTP GET request to `https://aldaviva.com` every 60 seconds.
 - If it has returned at least one 200 OK response in the last 600 seconds, this service will do nothing.

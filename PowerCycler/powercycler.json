@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copy this file to /etc or /usr/local/etc
  */
 {
@@ -10,7 +10,7 @@
 	"resumeHealthCheckAfterRestartSec": 300,
 	"Logging": {
 		"LogLevel": {
-			"Default": "Debug"
+			"Default": "Information"
 		}
 	}
 }
