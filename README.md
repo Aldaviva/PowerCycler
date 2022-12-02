@@ -1,7 +1,7 @@
 PowerCycler
 ===
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Aldaviva/PowerCycler/.NET?logo=github)](https://github.com/Aldaviva/Kasa/actions/workflows/main.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Aldaviva/PowerCycler/.NET?logo=github)](https://github.com/Aldaviva/PowerCycler/actions/workflows/main.yml)
 
 Automatically turn a power outlet off and on again when a health check fails.
 
