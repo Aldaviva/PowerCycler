@@ -1,0 +1,20 @@
+# Copy this file to /etc/systemd/system/
+# Also be sure to copy the configuration file powercycler.json to /usr/local/etc/
+#
+# Install:           sudo systemctl daemon-reload
+# Enable auto-start: sudo systemctl enable powercycler.service
+# Start:             sudo systemctl start powercycler.service
+# Check status:      sudo systemctl status powercycler.service
+# Read logs:         sudo journalctl -u powercycler.service
+#
+# Source: https://devblogs.microsoft.com/dotnet/net-core-and-systemd/
+
+[Unit]
+Description=PowerCycler
+
+[Service]
+Type=notify
+ExecStart=/usr/local/bin/PowerCycler
+
+[Install]
+WantedBy=multi-user.target

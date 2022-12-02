@@ -1,12 +1,13 @@
 ﻿using Kasa;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using PowerCycler;
 
 using IHost host = Host.CreateDefaultBuilder(args)
     .UseSystemd()
+    .UseWindowsService(options => options.ServiceName = "PowerCycler")
+    .ConfigureAppConfiguration(builder => builder
+        .AddJsonFile("./powercycler.json", true)
+        .AddJsonFile("/etc/powercycler.json", true)
+        .AddJsonFile("/usr/local/etc/powercycler.json", true))
     .ConfigureServices(services => {
         services.AddHostedService<HealthMonitor>();
         services.AddSingleton(s => s.GetRequiredService<IConfiguration>().Get<Configuration>()!);

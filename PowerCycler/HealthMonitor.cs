@@ -2,8 +2,6 @@
 using System.Net.Sockets;
 using System.Timers;
 using Kasa;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Timer = System.Timers.Timer;
 
 namespace PowerCycler;
@@ -15,7 +13,8 @@ public class HealthMonitor: BackgroundService {
     private readonly ILogger<HealthMonitor> logger;
     private readonly HttpClient             httpClient;
     private readonly Timer                  restartTrigger;
-    private          CancellationToken      cancellationToken;
+
+    private CancellationToken cancellationToken;
 
     public HealthMonitor(Configuration configuration, IKasaOutlet outlet, ILogger<HealthMonitor> logger) {
         this.configuration = configuration;
@@ -33,33 +32,37 @@ public class HealthMonitor: BackgroundService {
             ConnectTimeout           = TimeSpan.FromSeconds(configuration.healthCheckTimeoutSec),
             PooledConnectionLifetime = TimeSpan.FromMinutes(15)
         });
+
+        logger.LogInformation("Checking {Url} every {CheckInterval:N0} seconds, and power cycling {OutletHostname} after it is offline for {MaxOffline:N0} seconds.", configuration.healthCheckUrl,
+            configuration.healthCheckFrequencySec, configuration.outletHostname, configuration.minOfflineDurationBeforeRestartSec);
     }
 
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
         cancellationToken = stoppingToken;
-        while (!cancellationToken.IsCancellationRequested) {
+        while (!stoppingToken.IsCancellationRequested) {
             try {
-                Uri healthCheckUrl = configuration.healthCheckUrl;
+                bool isHealthy = await checkHealth();
 
-                bool success = healthCheckUrl.Scheme.ToLowerInvariant() switch {
-                    "http" or "https" => await checkHttpHealth(healthCheckUrl),
-                    "tcp"             => await checkTcpHealth(healthCheckUrl),
-                    _                 => throw new ArgumentOutOfRangeException($"Unknown health check URI scheme {healthCheckUrl.Scheme}")
-                };
+                logger.LogDebug("{Hostname} is {Status}", configuration.healthCheckUrl, isHealthy ? "online" : "offline");
 
-                logger.LogInformation("{Hostname} is {Status}", healthCheckUrl, success ? "online" : "offline");
-
-                if (success) {
+                if (isHealthy) {
                     onHealthCheckSuccess();
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(configuration.healthCheckFrequencySec), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(configuration.healthCheckFrequencySec), stoppingToken);
             } catch (TaskCanceledException) {
                 // while loop will finish now
             }
         }
     }
+
+    private Task<bool> checkHealth() =>
+        configuration.healthCheckUrl.Scheme.ToLowerInvariant() switch {
+            "http" or "https" => checkHttpHealth(configuration.healthCheckUrl),
+            "tcp"             => checkTcpHealth(configuration.healthCheckUrl),
+            _                 => throw new ArgumentOutOfRangeException($"Unknown health check URI scheme {configuration.healthCheckUrl.Scheme}")
+        };
 
     private async Task<bool> checkHttpHealth(Uri healthCheckUrl) {
         try {
@@ -102,27 +105,34 @@ public class HealthMonitor: BackgroundService {
     }
 
     private async void restart(object? sender, ElapsedEventArgs e) {
+        if (cancellationToken.IsCancellationRequested) return;
         restartTrigger.Stop();
-        if (!cancellationToken.IsCancellationRequested) {
-            try {
+
+        try {
+            //last-ditch health check before restarting
+            bool isHealthy = await checkHealth();
+            if (!isHealthy) {
                 logger.LogInformation("Power cycling the outlet at {OutletHostname}", configuration.outletHostname);
-                /*await outlet.System.SetOutletOn(false);
+                await outlet.System.SetOutletOn(false);
                 // ReSharper disable once MethodSupportsCancellation - even if the service is shutting down, we still want to turn the outlet back on
                 await Task.Delay(TimeSpan.FromSeconds(2));
-                await outlet.System.SetOutletOn(true);*/
+                await outlet.System.SetOutletOn(true);
                 await Task.Delay(TimeSpan.FromSeconds(configuration.resumeHealthCheckAfterRestartSec), cancellationToken);
-                restartTrigger.Start();
-            } catch (KasaException ex) {
-                logger.LogError(ex, "Failed to power cycle outlet {Hostname}", outlet.Hostname);
-            } catch (TaskCanceledException) { }
+            }
+        } catch (KasaException ex) {
+            logger.LogError(ex, "Failed to power cycle outlet {Hostname}", outlet.Hostname);
+        } catch (TaskCanceledException) {
+            // continue
+        } finally {
+            restartTrigger.Start();
         }
     }
 
     protected virtual void Dispose(bool disposing) {
         if (disposing) {
-            httpClient.Dispose();
             restartTrigger.Elapsed -= restart;
             restartTrigger.Dispose();
+            httpClient.Dispose();
         }
     }
 

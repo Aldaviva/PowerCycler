@@ -1,0 +1,16 @@
+﻿/*
+ * Copy this file to /etc or /usr/local/etc
+ */
+{
+	"healthCheckUrl": "https://thor.aldaviva.com/health-check.txt",
+	"healthCheckTimeoutSec": 5,
+	"healthCheckFrequencySec": 60,
+	"outletHostname": "thor.outlets.aldaviva.com",
+	"minOfflineDurationBeforeRestartSec": 600,
+	"resumeHealthCheckAfterRestartSec": 300,
+	"Logging": {
+		"LogLevel": {
+			"Default": "Debug"
+		}
+	}
+}

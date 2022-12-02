@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Worker">
 
     <PropertyGroup>
         <Version>0.0.0</Version>
@@ -9,28 +9,30 @@
         <RollForward>major</RollForward>
         <LangVersion>latest</LangVersion>
         <ServerGarbageCollection>true</ServerGarbageCollection>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <Copyright>© 2022 Ben Hutchison</Copyright>
         <Authors>Ben Hutchison</Authors>
         <Company>Ben Hutchison</Company>
     </PropertyGroup>
 
     <ItemGroup>
-      <None Remove="ExceptionAdjustments.txt" />
+        <None Remove="ExceptionAdjustments.txt" />
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="ExceptionAdjustments.txt" />
+        <AdditionalFiles Include="ExceptionAdjustments.txt" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Kasa" Version="1.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="appsettings.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+    <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('linux'))">
+        <None Update="powercycler.service">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

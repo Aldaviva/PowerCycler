@@ -47,5 +47,6 @@ jobs:
         path: |
           ${{ env.ProjectName }}/bin/Release/net7.0/${{ matrix.targetPlatform }}/publish/${{ env.ProjectName }}
           ${{ env.ProjectName }}/bin/Release/net7.0/${{ matrix.targetPlatform }}/publish/${{ env.ProjectName }}.exe
-          ${{ env.ProjectName }}/bin/Release/net7.0/${{ matrix.targetPlatform }}/publish/appsettings.json
+          ${{ env.ProjectName }}/bin/Release/net7.0/${{ matrix.targetPlatform }}/publish/powercycler.json
+          ${{ env.ProjectName }}/bin/Release/net7.0/${{ matrix.targetPlatform }}/publish/powercycler.service
         if-no-files-found: error
