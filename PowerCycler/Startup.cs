@@ -8,9 +8,9 @@ using IHost host = Host.CreateDefaultBuilder(args)
         .AddJsonFile("./powercycler.json", true)
         .AddJsonFile("/etc/powercycler.json", true)
         .AddJsonFile("/usr/local/etc/powercycler.json", true))
-    .ConfigureServices(services => {
+    .ConfigureServices((context, services) => {
         services.AddHostedService<HealthMonitor>();
-        services.AddSingleton(s => s.GetRequiredService<IConfiguration>().Get<Configuration>()!);
+        services.AddSingleton(_ => context.Configuration.Get<Configuration>()!);
 
         services.AddSingleton<IKasaOutlet>(s => {
             Configuration config  = s.GetRequiredService<Configuration>();

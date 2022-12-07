@@ -31,7 +31,7 @@
 
     <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('linux'))">
         <None Update="powercycler.service">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 
