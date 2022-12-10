@@ -24,7 +24,7 @@ public class HealthMonitor: BackgroundService {
 
         restartTrigger = new Timer(TimeSpan.FromSeconds(configuration.minOfflineDurationBeforeRestartSec)) {
             AutoReset = false,
-            Enabled   = false // wait for one healthy check at startup before running the kill timer. helps after power outages when the router is slow to boot.
+            Enabled   = true
         };
         restartTrigger.Elapsed += restart;
 
@@ -82,7 +82,7 @@ public class HealthMonitor: BackgroundService {
         } catch (HttpProtocolException) {
             return false;
         } catch (TaskCanceledException) {
-            return true;
+            return false;
         }
     }
 
@@ -97,7 +97,7 @@ public class HealthMonitor: BackgroundService {
         } catch (SocketException) {
             return false;
         } catch (TaskCanceledException) {
-            return true;
+            return false;
         }
     }
 
